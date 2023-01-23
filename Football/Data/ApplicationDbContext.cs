@@ -19,13 +19,13 @@ namespace Football.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var countries = new Country[3];
-            countries[0] = new Country { ID = System.Guid.NewGuid(), Name = "Италия" };
-            countries[1] = new Country{ ID = System.Guid.NewGuid(), Name = "США" };
-            countries[2] = new Country { ID = System.Guid.NewGuid(), Name = "РФ" };
+            countries[0] = new Country { ID = 1, Name = "Италия" };
+            countries[1] = new Country{ ID = 2, Name = "США" };
+            countries[2] = new Country { ID = 3, Name = "РФ" };
 
             // Имеет смысл с самого начала добавить в качестве команды опцию "Свободный агент", т.к. игрок может не иметь контракта ни с одной из команд. 
             var teams = new Team[1];
-            teams[0] = new Team { ID = System.Guid.NewGuid(), Name = "Свободный агент" };  
+            teams[0] = new Team { ID = 1, Name = "Свободный агент" };  
             modelBuilder.Entity<Country>().HasData(countries);
             modelBuilder.Entity<Team>().HasData(teams);
         }

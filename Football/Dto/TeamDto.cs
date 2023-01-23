@@ -5,7 +5,7 @@ namespace Football.Dto
 {
     public class TeamDto
     {
-        public Guid ID { get; init; }
+        public int ID { get; init; }
 
         [Required]
         [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$", ErrorMessage = "Допускается использование только букв русского и английского алфавитов")]

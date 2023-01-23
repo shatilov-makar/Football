@@ -39,7 +39,7 @@ namespace Football
             });
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FootbalApp", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FootballApp", Version = "v1" });
             });
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"))
@@ -60,7 +60,7 @@ namespace Football
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FootbalApp v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FootballApp v1"));
             }
             else
             {

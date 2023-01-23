@@ -8,13 +8,11 @@ namespace Football.Models
     public sealed class Country
     {
         [Key]
-        public Guid ID { get; set; }
+        public int ID { get; set; }
 
         [Required]
         public string Name { get; set; } = string.Empty;
 
         public ICollection<Player> Players { get; set; }
-
-
     }
 }

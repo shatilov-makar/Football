@@ -30,7 +30,8 @@ namespace Football.Controllers
             .ReverseMap()
             .ForMember(dest => dest.TeamName, y => y.MapFrom(c => c.Team.Name))
             .ForMember(dest => dest.CountryName, y => y.MapFrom(c => c.Country.Name))
-            .ForMember(dest => dest.Birthday, y => y.MapFrom(c => DateTime.Parse(c.Birthday.ToString("dd.MM.yyyy")))));
+            .ForMember(dest => dest.Birthday, y => y.MapFrom(c => DateTime.Parse(c.Birthday.ToString("dd.MM.yyyy"))))
+            );
 
             _mapper = new Mapper(config);
         }
@@ -38,10 +39,10 @@ namespace Football.Controllers
         /// <summary>
         /// Returns a player by his ID. If no player with given ID is found, returns 204.
         /// </summary>
-        [HttpGet("{player_id:Guid}")]
+        [HttpGet("{player_id:int}")]
         [ProducesResponseType(typeof(PlayerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> GetPlayer(Guid player_id)
+        public async Task<IActionResult> GetPlayer(int player_id)
         {
             var player = await _applicationDbContext.Players
                 .Include(player => player.Team)
@@ -63,7 +64,7 @@ namespace Football.Controllers
         public async Task<IActionResult> GetAllPlayers()
         {
             var players = await _applicationDbContext.Players
-                .OrderBy(player => player.Surname)
+                .OrderBy(player => player.ID)
                 .Include(player => player.Team)
                 .Include(player => player.Country)
                 .Select(player => _mapper.Map<Player, PlayerDto>(player))
@@ -110,6 +111,12 @@ namespace Football.Controllers
                 if (_applicationDbContext.Players.Any(p => p.ID == updatedPlayer.ID))
                 {
                     var player = _mapper.Map<PlayerDto, Player>(updatedPlayer);
+                    if (_applicationDbContext.Players.Any(p => p.Name == player.Name && p.Surname == player.Surname 
+                    && p.Birthday == player.Birthday && p.ID != player.ID))
+                    {
+                        ModelState.AddModelError(nameof(PlayerDto), "Этот игрок уже сущетсвует");
+                        return BadRequest(ModelState);
+                    }
                     _applicationDbContext.Players.Update(player);
                     _applicationDbContext.Entry(player).Reference(p => p.Team).Load();
                     _applicationDbContext.Entry(player).Reference(p => p.Country).Load();

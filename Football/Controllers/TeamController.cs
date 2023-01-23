@@ -35,7 +35,8 @@ namespace Football.Controllers
         [ProducesResponseType(typeof(List<TeamDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllTeams()
         {
-            var teams = await _applicationDbContext.Teams.OrderBy(team => team.Name)
+            var teams = await _applicationDbContext.Teams
+                .OrderBy(team => team.Name)
                 .Select(team => _mapper.Map<Team, TeamDto>(team))
                 .ToListAsync();
             return Ok(teams);
@@ -44,10 +45,10 @@ namespace Football.Controllers
         /// <summary>
         /// Returns a team by its ID. If no team with given ID is found, returns 204.
         /// </summary>
-        [HttpGet("{team_id:Guid}")]
+        [HttpGet("{team_id:int}")]
         [ProducesResponseType(typeof(TeamDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> GetTeam(Guid team_id)
+        public async Task<IActionResult> GetTeam(int team_id)
         {
             var team = await _applicationDbContext.Teams.SingleOrDefaultAsync(team => team.ID == team_id);
             if (team == null)

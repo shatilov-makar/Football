@@ -10,8 +10,7 @@ namespace Football.Models
     public sealed class Player
     {
         [Key]
-        public Guid ID { get; set; }
-
+        public int ID { get; set; }
 
         [Required]
         [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$")]
@@ -31,22 +30,16 @@ namespace Football.Models
         [Column(TypeName = "Date")]
         public DateTime Birthday { get; set; }
 
-        public Guid TeamID { get; set; }
+        public int TeamID { get; set; }
 
         [ForeignKey("TeamID")]
         public Team Team { get; set; }
 
-
         [Required]
-        public Guid CountryID { get; set; }
+        public int CountryID { get; set; }
 
         [ForeignKey("CountryID")]
         public Country Country { get; set; }
-
-
-
-
-
 
     }
 }

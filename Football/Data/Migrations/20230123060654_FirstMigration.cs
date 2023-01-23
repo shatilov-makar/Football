@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Football.Data.Migrations
 {
@@ -11,7 +12,8 @@ namespace Football.Data.Migrations
                 name: "Countries",
                 columns: table => new
                 {
-                    ID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -23,7 +25,8 @@ namespace Football.Data.Migrations
                 name: "Teams",
                 columns: table => new
                 {
-                    ID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -35,13 +38,14 @@ namespace Football.Data.Migrations
                 name: "Players",
                 columns: table => new
                 {
-                    ID = table.Column<Guid>(type: "uuid", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Surname = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Gender = table.Column<string>(type: "char(1)", nullable: false),
                     Birthday = table.Column<DateTime>(type: "Date", nullable: false),
-                    TeamID = table.Column<Guid>(type: "uuid", nullable: false),
-                    CountryID = table.Column<Guid>(type: "uuid", nullable: false)
+                    TeamID = table.Column<int>(type: "integer", nullable: false),
+                    CountryID = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,15 +69,15 @@ namespace Football.Data.Migrations
                 columns: new[] { "ID", "Name" },
                 values: new object[,]
                 {
-                    { new Guid("37d4984a-7c00-47de-be01-8fddaff65cd4"), "Италия" },
-                    { new Guid("d23367a5-1bdd-4ba6-8ad9-cc1471178397"), "США" },
-                    { new Guid("91a4946b-f29f-4738-b6a2-c1b8bd7a5f8d"), "РФ" }
+                    { 1, "Италия" },
+                    { 2, "США" },
+                    { 3, "РФ" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Teams",
                 columns: new[] { "ID", "Name" },
-                values: new object[] { new Guid("79e82d8b-7d2e-4c8a-8e88-a12fcf6e2b1c"), "Свободный агент" });
+                values: new object[] { 1, "Свободный агент" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Players_CountryID",

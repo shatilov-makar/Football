@@ -37,6 +37,7 @@ namespace Football.Controllers
         public async Task<IActionResult> GetAllCountries()
         {
             var countries = await _applicationDbContext.Countries
+                .OrderBy(country => country.Name)
                 .Select(country => _mapper.Map<Country, CountryDto>(country))
                 .ToListAsync();
             return Ok(countries);

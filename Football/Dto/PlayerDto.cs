@@ -5,8 +5,7 @@ namespace Football.Dto
 {
     public class PlayerDto
     {
-        public Guid ID { get; init; }
-
+        public int ID { get; init; }
 
         [Required]
         [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$",
@@ -30,12 +29,10 @@ namespace Football.Dto
         public string TeamName { get; init; }
        
 
-        public Guid TeamID { get; init; }
+        public int TeamID { get; init; }
 
         public string CountryName { get; init; }
 
-        public Guid CountryID { get; init; }
-
-
+        public int CountryID { get; init; }
     }
 }
