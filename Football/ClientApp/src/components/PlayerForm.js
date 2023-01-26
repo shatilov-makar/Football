@@ -9,7 +9,7 @@ export default function PlayerForm() {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [gender, setGender] = useState(0);
-  const [birthday, setBirthday] = useState();
+  const [birthday, setBirthday] = useState(moment(new Date()).format('YYYY-MM-DD'));
   const [team, setTeam] = useState();
   const [country, setCountry] = useState();
   const [teams, setTeams] = useState([]);
@@ -32,7 +32,7 @@ export default function PlayerForm() {
   };
 
   const initPlayer = async (playerID) => {
-    getData(`/players/${playerID}`, (playerData) => {
+    getData(`/api/players/${playerID}`, (playerData) => {
       if (playerData) {
         setGender(playerData.gender);
         setName(playerData.name);
@@ -64,8 +64,8 @@ export default function PlayerForm() {
       setIsUpdatedForm(true);
       initPlayer(player_id);
     }
-    getData('/teams', (data) => setTeams(data));
-    getData('/countries', (data) => setCountries(data));
+    getData('/api/teams', (data) => setTeams(data));
+    getData('/api/countries', (data) => setCountries(data));
   }, [player_id]);
 
   const createPlayer = async (e) => {
@@ -84,7 +84,7 @@ export default function PlayerForm() {
     }
     setSuccessAction(false);
     await axios
-      .post('/players', req, {
+      .post('/api/players', req, {
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
       })
       .then(async (result) => {
@@ -115,7 +115,7 @@ export default function PlayerForm() {
       countryID: country,
     };
     await axios
-      .put(`/players`, req, {
+      .put(`/api/players`, req, {
         headers: { 'Content-Type': 'application/json; charset=UTF-8' },
       })
       .then(async (result) => {
@@ -217,7 +217,7 @@ export default function PlayerForm() {
             show={showTeamForm}
             onHide={() => {
               setShowTeamForm(false);
-              getData('/teams', (data) => setTeams(data));
+              getData('/api/teams', (data) => setTeams(data));
             }}
           />
         </>

@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 namespace Football.Controllers
 {
-    [Route("teams")]
+    [Route("api/teams")]
     public class TeamController : Controller
     {
         private readonly ApplicationDbContext _applicationDbContext;

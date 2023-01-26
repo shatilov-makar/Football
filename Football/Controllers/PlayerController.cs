@@ -13,17 +13,19 @@ using Microsoft.AspNetCore.Http;
 using AutoMapper;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.SignalR;
+using Football.Hubs;
 
 namespace Football.Controllers
 {
-    [Route("players")]
+    [Route("api/players")]
     public class PlayerController : Controller
     {
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IMapper _mapper;
+        private readonly IHubContext<PlayersHub, IPlayersHubClient> _playersHub;
 
-
-        public PlayerController(ApplicationDbContext applicationDbContext)
+        public PlayerController(IHubContext<PlayersHub, IPlayersHubClient> playersHub, ApplicationDbContext applicationDbContext)
         {
             _applicationDbContext = applicationDbContext;
             var config = new MapperConfiguration(cfg => cfg.CreateMap<PlayerDto, Player>()
@@ -34,6 +36,7 @@ namespace Football.Controllers
             );
 
             _mapper = new Mapper(config);
+            _playersHub = playersHub;
         }
 
         /// <summary>
@@ -93,6 +96,7 @@ namespace Football.Controllers
                 _applicationDbContext.Entry(player).Reference(p => p.Team).Load();
                 _applicationDbContext.Entry(player).Reference(p => p.Country).Load();
                 await _applicationDbContext.SaveChangesAsync();
+                await _playersHub.Clients.All.SendPlayerToUsers(_mapper.Map<Player, PlayerDto>(player));
                 return CreatedAtAction(nameof(GetPlayer), new { player.ID });
             }
             return BadRequest(ModelState);
@@ -121,6 +125,7 @@ namespace Football.Controllers
                     _applicationDbContext.Entry(player).Reference(p => p.Team).Load();
                     _applicationDbContext.Entry(player).Reference(p => p.Country).Load();
                     await _applicationDbContext.SaveChangesAsync();
+                    await _playersHub.Clients.All.SendPlayerToUsers(_mapper.Map<Player, PlayerDto>(player));
                     return NoContent();
                 }
                 ModelState.AddModelError(nameof(PlayerDto), "Игрока с таким идентификатором нет");

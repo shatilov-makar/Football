@@ -11,6 +11,9 @@ using React.AspNet;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
+using Football.Hubs;
+using System;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Football
 {
@@ -34,7 +37,7 @@ namespace Football
                                   {
                                       policy.WithOrigins("http://localhost:3000")
                                       .AllowAnyMethod()
-                                      .AllowAnyHeader(); 
+                                      .AllowAnyHeader();
                                   });
             });
             services.AddSwaggerGen(c =>
@@ -44,13 +47,18 @@ namespace Football
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"))
                 );
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
             services.AddRouting(options => options.LowercaseUrls = true);
             services.AddSpaStaticFiles(configuration =>
            {
                configuration.RootPath = "ClientApp/build";
            });
             services.AddReact();
+            services.AddSignalR();
+
         }
 
 
@@ -91,6 +99,8 @@ namespace Football
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action}/{id?}");
+                endpoints.MapHub<PlayersHub>("api/playersHub");
+
             });
             app.UseSpaStaticFiles();
             app.UseSpa(spa =>

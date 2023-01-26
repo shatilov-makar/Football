@@ -19,7 +19,7 @@ export default function TeamCreateForm(props) {
     }
     await axios
       .post(
-        '/teams',
+        'api/teams',
         { Name: teamName },
         {
           headers: { 'Content-Type': 'application/json; charset=UTF-8' },

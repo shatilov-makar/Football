@@ -14,7 +14,7 @@ using AutoMapper;
 
 namespace Football.Controllers
 {
-    [Route("countries")]
+    [Route("api/countries")]
     public class CountryController : Controller
     {
         private readonly ApplicationDbContext _applicationDbContext;

@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Table, Alert, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import moment from 'moment/moment';
 import axios from 'axios';
+import * as signalR from '@microsoft/signalr';
 
 export default function Players() {
   const [players, setPlayers] = useState([]);
 
-  const getPlayers = async () => {
+  const latestPlayers = useRef(null);
+
+  latestPlayers.current = players;
+
+  const getPlayers = () => {
     axios
-      .get('/players')
+      .get('api/players')
       .then((players) => {
         setPlayers(players.data);
       })
@@ -18,9 +23,28 @@ export default function Players() {
       });
   };
 
+  function signalRConnection() {
+    const hubConnection = new signalR.HubConnectionBuilder().withUrl('api/playersHub').build();
+    hubConnection.start().then((result) => {
+      hubConnection.on('SendPlayerToUsers', updatePlayersList);
+    });
+  }
+
   useEffect(() => {
     getPlayers();
+    signalRConnection();
   }, []);
+
+  function updatePlayersList(player) {
+    const updatedPlayers = [...latestPlayers.current];
+    const playerById = updatedPlayers.find((p) => p.id === player.id);
+    if (playerById) {
+      setPlayers(updatedPlayers.map((p) => (p.id === player.id ? player : p)));
+    } else {
+      updatedPlayers.push(player);
+      setPlayers(updatedPlayers);
+    }
+  }
 
   const Row = ({ player }) => {
     return (
