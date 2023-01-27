@@ -14,13 +14,13 @@ export default function PlayerForm() {
   const [country, setCountry] = useState();
   const [teams, setTeams] = useState([]);
   const [countries, setCountries] = useState([]);
-  const [isUpdatedForm, setIsUpdatedForm] = useState(false);
+  const [isUpdateForm, setIsUpdateForm] = useState(false);
   const [showTeamForm, setShowTeamForm] = useState(false);
   const [successAction, setSuccessAction] = useState(false);
   const [errorAction, setErrorAction] = useState('');
   const { player_id } = useParams();
 
-  const getData = async (url, f) => {
+  const getData = async (url, next) => {
     const data = await axios
       .get(url)
       .then((req) => req.data)
@@ -28,101 +28,56 @@ export default function PlayerForm() {
         setSuccessAction(false);
         setErrorAction(error.message);
       });
-    f(data);
+    next(data);
   };
 
-  const initPlayer = async (playerID) => {
-    getData(`/api/players/${playerID}`, (playerData) => {
-      if (playerData) {
-        setGender(playerData.gender);
-        setName(playerData.name);
-        setSurname(playerData.surname);
-        setBirthday(moment(playerData.birthday).format('YYYY-MM-DD'));
-        setTeam(playerData.teamID);
-        setCountry(playerData.countryID);
-      } else {
-        setErrorAction('Не удалось загрузить данные пользователя');
-      }
-    });
-  };
-
-  const setEmptyPlayer = async () => {
-    setGender(0);
-    setName('');
-    setSurname('');
-    setBirthday(new Date());
-    setTeam('');
-    setCountry('');
-  };
-
-  const checkFileds = () => {
-    return name && surname && birthday && team && country;
+  const initPlayerStates = (playerData) => {
+    if (playerData) {
+      setGender(playerData.gender || 0);
+      setName(playerData.name || '');
+      setSurname(playerData.surname || '');
+      setBirthday(moment(playerData.birthday || new Date()).format('YYYY-MM-DD'));
+      setTeam(playerData.teamID || '');
+      setCountry(playerData.countryID || '');
+    } else {
+      setErrorAction('Не удалось загрузить данные пользователя');
+    }
   };
 
   useEffect(() => {
     if (player_id) {
-      setIsUpdatedForm(true);
-      initPlayer(player_id);
+      setIsUpdateForm(true);
+      getData(`/api/players/${player_id}`, initPlayerStates);
+    } else {
+      setIsUpdateForm(false);
+      initPlayerStates({});
     }
     getData('/api/teams', (data) => setTeams(data));
     getData('/api/countries', (data) => setCountries(data));
   }, [player_id]);
 
-  const createPlayer = async (e) => {
+  const sendPlayer = async (e, method) => {
     e.preventDefault();
-
-    const req = {
-      name,
-      surname,
-      gender,
-      birthday,
-      teamID: team,
-      countryID: country,
-    };
-    if (!checkFileds()) {
-      return;
-    }
-    setSuccessAction(false);
-    await axios
-      .post('/api/players', req, {
-        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      })
-      .then(async (result) => {
-        setSuccessAction(true);
-        setEmptyPlayer();
-        setErrorAction('');
-      })
-      .catch(async (error) => {
-        console.log(error);
-        setErrorAction([Object.values(error.response.data)[0]][0]);
-        setSuccessAction(false);
-      });
-  };
-
-  const updatePlayer = async (e) => {
-    e.preventDefault();
-    if (!checkFileds()) {
-      return;
-    }
-    setSuccessAction(false);
     const req = {
       id: player_id,
       name,
       surname,
-      birthday,
       gender,
+      birthday,
       teamID: team,
       countryID: country,
     };
-    await axios
-      .put(`/api/players`, req, {
-        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
-      })
+    setSuccessAction(false);
+    await axios[method]('/api/players', req, {
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+    })
       .then(async (result) => {
         setSuccessAction(true);
         setErrorAction('');
+        if (!isUpdateForm) initPlayerStates({});
       })
       .catch(async (error) => {
+        console.error(error);
         setErrorAction([Object.values(error.response.data)[0]][0]);
         setSuccessAction(false);
       });
@@ -131,9 +86,9 @@ export default function PlayerForm() {
   return (
     <div className="container p-5">
       <h2 className="text-center">
-        {isUpdatedForm ? `Обновите данные` : `Создайте нового футболиста`}
+        {isUpdateForm ? `Обновите данные` : `Создайте нового футболиста`}
       </h2>
-      <Form onSubmit={(e) => (isUpdatedForm ? updatePlayer(e) : createPlayer(e))} id="playerForm">
+      <Form onSubmit={(e) => sendPlayer(e, isUpdateForm ? 'put' : 'post')} id="playerForm">
         <Form.Group className="mb-3" controlId="formBasicName">
           <Form.Label>Имя</Form.Label>
           <Form.Control
@@ -204,7 +159,7 @@ export default function PlayerForm() {
             ))}
           </Form.Select>
         </Form.Group>
-        <>
+        <Form.Group className="mb-3" controlId="formBasicCreateNewTeam">
           <Button
             variant="secondary"
             onClick={() => {
@@ -212,7 +167,6 @@ export default function PlayerForm() {
             }}>
             Создать новую команду
           </Button>
-
           <TeamCreateForm
             show={showTeamForm}
             onHide={() => {
@@ -220,7 +174,7 @@ export default function PlayerForm() {
               getData('/api/teams', (data) => setTeams(data));
             }}
           />
-        </>
+        </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicNationality">
           <Form.Label>Национальность</Form.Label>
           <Form.Select
@@ -241,12 +195,12 @@ export default function PlayerForm() {
         </Form.Group>
         {successAction && !errorAction && (
           <Alert variant="success">
-            {isUpdatedForm ? 'Данные пользователя обновлены' : 'Пользователь создан!'}
+            {isUpdateForm ? 'Данные пользователя обновлены' : 'Пользователь создан!'}
           </Alert>
         )}
         {!successAction && errorAction && <Alert variant="danger ">{errorAction}</Alert>}
         <Button variant="primary" type="submit" form="playerForm">
-          {isUpdatedForm ? 'Обновить данные' : 'Создать'}
+          {isUpdateForm ? 'Обновить данные' : 'Создать'}
         </Button>
       </Form>
     </div>

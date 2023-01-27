@@ -23,16 +23,18 @@ export default function Players() {
       });
   };
 
-  function signalRConnection() {
+  function setupSignalRConnection() {
     const hubConnection = new signalR.HubConnectionBuilder().withUrl('api/playersHub').build();
     hubConnection.start().then((result) => {
       hubConnection.on('SendPlayerToUsers', updatePlayersList);
     });
+    return hubConnection;
   }
 
   useEffect(() => {
     getPlayers();
-    signalRConnection();
+    const connection = setupSignalRConnection();
+    return () => connection.stop();
   }, []);
 
   function updatePlayersList(player) {

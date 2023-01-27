@@ -1,5 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { Alert, Form, Modal, Button } from 'react-bootstrap';
 import axios from 'axios';
 
@@ -14,7 +13,8 @@ export default function TeamCreateForm(props) {
   const postTeam = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!teamName) {
+    if (!teamName || !teamName.trim()) {
+      setErrorAction('Недопустимое название команды');
       return;
     }
     await axios
@@ -29,6 +29,7 @@ export default function TeamCreateForm(props) {
         props.onHide();
       })
       .catch(async (error) => {
+        console.log(error);
         setErrorAction([Object.values(error.response.data)[0]][0]);
       });
   };
