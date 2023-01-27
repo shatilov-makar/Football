@@ -105,11 +105,11 @@ namespace Football
             app.UseSpaStaticFiles();
             app.UseSpa(spa =>
              {
-                  spa.Options.SourcePath = "ClientApp";
+                 spa.Options.SourcePath = "ClientApp";
                  if (env.IsDevelopment())
                  {
                       spa.UseReactDevelopmentServer(npmScript: "start");
-                  }
+                 }
              });
         }
     }

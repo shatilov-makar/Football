@@ -38,5 +38,9 @@
     <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
   </Target>
+  <Target Name="PublishRunWebpack" AfterTargets="DebugEnsureNodeEnv" Condition=" !Exists('$(SpaRoot)build')">
+    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+  </Target>
 
 </Project>
