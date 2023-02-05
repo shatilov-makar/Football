@@ -7,32 +7,31 @@ namespace Football.Dto
     {
         public int ID { get; init; }
 
-        [Required]
-        [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$",
-      ErrorMessage = "Допускается использование только букв русского и английского алфавитов")]
-        [StringLength(50, MinimumLength =1, ErrorMessage="Недопустимая длина имени")]
-        public string Name { get; init; }
+        [Required(ErrorMessage="Необходимо ввести имя")]
+        [RegularExpression(@"^(([A-Za-zА-Яа-я])|([A-Za-zА-Яа-я]['-\.](?=[A-Za-zА-Яа-я]))|( (?=[A-Za-zА-Яа-я])))*$", ErrorMessage = "Недопустимое имя")]
+        [StringLength(50, ErrorMessage="Недопустимая длина имени")]
+        public string Name { get; set; }
+
+        [Required(ErrorMessage = "Необходимо ввести фамилию")]
+        [RegularExpression(@"^(([A-Za-zА-Яа-я])|([A-Za-zА-Яа-я]['-\.](?=[A-Za-zА-Яа-я]))|( (?=[A-Za-zА-Яа-я])))*$", ErrorMessage = "Недопустимая фамилия")]
+        [StringLength(50, ErrorMessage = "Недопустимая длина фамилии")]
+        public string Surname { get; set; }
 
         [Required]
-        [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$",
-  ErrorMessage = "Допускается использование только букв русского и английского алфавитов")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Недопустимая длина фамилии")]
-        public string Surname { get; init; }
-
-        [Required]
-        public DateTime  Birthday { get; init; }
+        public DateTime  Birthday { get; set; }
 
         [Required]
         [Range(0, 1)]
-        public byte Gender { get; init; }
+        public byte Gender { get; set; }
 
-        public string TeamName { get; init; }
-       
+        public string TeamName { get; set; }
 
-        public int TeamID { get; init; }
+        [Required]
+        public int TeamID { get; set; }
 
-        public string CountryName { get; init; }
+        public string CountryName { get; set; }
 
-        public int CountryID { get; init; }
+        [Required]
+        public int CountryID { get; set; }
     }
 }

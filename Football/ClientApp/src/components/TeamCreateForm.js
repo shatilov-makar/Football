@@ -13,13 +13,9 @@ export default function TeamCreateForm(props) {
   const postTeam = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!teamName || !teamName.trim()) {
-      setErrorAction('Недопустимое название команды');
-      return;
-    }
     await axios
       .post(
-        'api/teams',
+        'https://localhost:5001/api/teams',
         { Name: teamName },
         {
           headers: { 'Content-Type': 'application/json; charset=UTF-8' },
@@ -30,7 +26,7 @@ export default function TeamCreateForm(props) {
       })
       .catch(async (error) => {
         console.log(error);
-        setErrorAction([Object.values(error.response.data)[0]][0]);
+        setErrorAction([Object.values(error.response.data)[0]][0][0]);
       });
   };
 

@@ -10,11 +10,11 @@ namespace Football.Models
     public sealed class Team
     {
         [Key]
-        public int ID { get; set; }
+        public int ID { get; init; }
 
         [Required]
-        [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$")]
-        public string Name { get; set; } = string.Empty;
+        [RegularExpression(@"^(([A-Za-zА-Яа-я])|([A-Za-zА-Яа-я]['-\.](?=[A-Za-zА-Яа-я]))|( (?=[A-Za-zА-Яа-я])))*$")]
+        public string Name { get; init; }
 
         public ICollection<Player> Players { get; set; }
     }

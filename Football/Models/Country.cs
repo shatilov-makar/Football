@@ -8,10 +8,10 @@ namespace Football.Models
     public sealed class Country
     {
         [Key]
-        public int ID { get; set; }
+        public int ID { get; init; }
 
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; init; }
 
         public ICollection<Player> Players { get; set; }
     }

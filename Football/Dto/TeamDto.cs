@@ -7,9 +7,9 @@ namespace Football.Dto
     {
         public int ID { get; init; }
 
-        [Required]
-        [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$", ErrorMessage = "Допускается использование только букв русского и английского алфавитов")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "Недопустимая длина названия команды")]
+        [Required(ErrorMessage = "Необходимо ввести название команды")]
+        [RegularExpression(@"^(([A-Za-zА-Яа-я])|([A-Za-zА-Яа-я]['-\.](?=[A-Za-zА-Яа-я]))|( (?=[A-Za-zА-Яа-я])))*$", ErrorMessage = "Недопустимое название команды")]
+        [StringLength(50, ErrorMessage = "Недопустимая длина названия команды")]
         public string Name { get; init; }
     }
 }

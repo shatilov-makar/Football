@@ -10,26 +10,28 @@ namespace Football.Models
     public sealed class Player
     {
         [Key]
-        public int ID { get; set; }
+        public int ID { get; init; }
 
         [Required]
-        [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$")]
-        [StringLength(50, MinimumLength = 1)]
+        [RegularExpression(@"^(([A-Za-zА-Яа-я])|([A-Za-zА-Яа-я]['-\.](?=[A-Za-zА-Яа-я]))|( (?=[A-Za-zА-Яа-я])))*$")]
+        [StringLength(50)]
         public string Name { get; set; } 
 
         [Required]
-        [RegularExpression(@"^([a-zA-ZА-Яа-я '])+$")]
-        [StringLength(50, MinimumLength = 1)]
+        [RegularExpression(@"^(([A-Za-zА-Яа-я])|([A-Za-zА-Яа-я]['-\.](?=[A-Za-zА-Яа-я]))|( (?=[A-Za-zА-Яа-я])))*$")]
+        [StringLength(50)]
         public string Surname { get; set; }
 
         [Required]
         [Column(TypeName = "char(1)")]
+        [Range(0, 1)]
         public byte Gender { get; set; }
 
         [Required]
         [Column(TypeName = "Date")]
         public DateTime Birthday { get; set; }
 
+        [Required]
         public int TeamID { get; set; }
 
         [ForeignKey("TeamID")]

@@ -78,7 +78,7 @@ export default function PlayerForm() {
       })
       .catch(async (error) => {
         console.error(error);
-        setErrorAction([Object.values(error.response.data)[0]][0]);
+        setErrorAction([Object.values(error.response.data)[0]][0][0]);
         setSuccessAction(false);
       });
   };
@@ -96,7 +96,7 @@ export default function PlayerForm() {
             type="text"
             placeholder="Введите имя"
             value={name}
-            onChange={(e) => setName(e.target.value === ' ' ? '' : e.target.value)}
+            onChange={(e) => setName(e.target.value)}
           />
         </Form.Group>
 
@@ -107,7 +107,7 @@ export default function PlayerForm() {
             type="text"
             placeholder="Введите фамилию"
             value={surname}
-            onChange={(e) => setSurname(e.target.value === ' ' ? '' : e.target.value)}
+            onChange={(e) => setSurname(e.target.value)}
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicGender">
