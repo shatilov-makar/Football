@@ -1,35 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Table, Alert, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Table, Alert, Button, Pagination } from 'react-bootstrap';
+import { Link, useSearchParams } from 'react-router-dom';
 import moment from 'moment/moment';
 import axios from 'axios';
 import * as signalR from '@microsoft/signalr';
 
 export default function Players() {
   const [players, setPlayers] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const latestPlayers = useRef(null);
+  const PageNumber = Number(searchParams.get('PageNumber') || 1);
+  const PageSize = Number(searchParams.get('PageSize') || 15);
 
-  latestPlayers.current = players;
+  const playersOnScreen = useRef(null);
+
+  playersOnScreen.current = players;
 
   const getPlayers = () => {
+    console.log(PageNumber, PageSize);
     axios
-      .get('api/players')
+      .get('api/players', { params: { PageNumber, PageSize } })
       .then((players) => {
         setPlayers(players.data);
+        setPages(getPages(players));
       })
       .catch((error) => {
         console.error(error);
       });
   };
 
-  function setupSignalRConnection() {
+  const setupSignalRConnection = () => {
     const hubConnection = new signalR.HubConnectionBuilder().withUrl('api/playersHub').build();
     hubConnection.start().then((result) => {
       hubConnection.on('SendPlayerToUsers', updatePlayersList);
     });
     return hubConnection;
-  }
+  };
 
   useEffect(() => {
     getPlayers();
@@ -37,16 +44,16 @@ export default function Players() {
     return () => connection.stop();
   }, []);
 
-  function updatePlayersList(player) {
-    const updatedPlayers = [...latestPlayers.current];
-    const playerById = updatedPlayers.find((p) => p.id === player.id);
-    if (playerById) {
-      setPlayers(updatedPlayers.map((p) => (p.id === player.id ? player : p)));
-    } else {
-      updatedPlayers.push(player);
+  const updatePlayersList = (newPlayer) => {
+    const updatedPlayers = [...playersOnScreen.current];
+    const playerIdAmongPlayers = playersOnScreen.current.find((p) => p.id === newPlayer.id);
+    if (playerIdAmongPlayers) {
+      setPlayers(updatedPlayers.map((p) => (p.id === newPlayer.id ? newPlayer : p)));
+    } else if (playersOnScreen.current.length < PageSize) {
+      updatedPlayers.push(newPlayer);
       setPlayers(updatedPlayers);
     }
-  }
+  };
 
   const Row = ({ player }) => {
     return (
@@ -97,8 +104,39 @@ export default function Players() {
         <div className="col d-flex flex-column align-items-center ">
           <h2 className="text-center">Список игроков</h2>
           <FootballPlayersTable />
+          <Pagination>{pages}</Pagination>
         </div>
       </div>
     </div>
   );
 }
+
+const getPages = (players) => {
+  let items = [];
+  const metadata = JSON.parse(players.headers['x-pagination']);
+  items.push(
+    <Pagination.Prev
+      key={0}
+      disabled={metadata.CurrentPage === 1}
+      href={`/?PageNumber=${metadata.CurrentPage - 1}&PageSize=${15}`}
+    />
+  );
+  for (let number = 1; number <= metadata.TotalPages; number++) {
+    items.push(
+      <Pagination.Item
+        key={number}
+        active={number === metadata.CurrentPage}
+        href={`/?PageNumber=${number}&PageSize=${15}`}>
+        {number}
+      </Pagination.Item>
+    );
+  }
+  items.push(
+    <Pagination.Next
+      key={metadata.TotalPages + 1}
+      disabled={metadata.CurrentPage === metadata.TotalPages}
+      href={`/?PageNumber=${metadata.CurrentPage + 1}&PageSize=${15}`}
+    />
+  );
+  return items;
+};

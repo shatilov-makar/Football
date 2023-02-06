@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.AspNetCore.SignalR;
 using Football.Hubs;
+using Football.Parameters;
+using Football.Controllers.PagedList;
 
 namespace Football.Controllers
 {
@@ -58,21 +60,34 @@ namespace Football.Controllers
             return Ok(_mapper.Map<Player, PlayerDto>(player));
         }
 
+ 
 
         /// <summary>
-        /// Returns all players.
+        /// Returns paginated players.
         /// </summary>
         [HttpGet]
         [ProducesResponseType(typeof(List<PlayerDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllPlayers()
+        public IActionResult GetPaginatedPlayers([FromQuery] PlayerParameters playerParameters)
         {
-            var players = await _applicationDbContext.Players
+            var allPlayers =  _applicationDbContext.Players
                 .OrderBy(player => player.ID)
                 .Include(player => player.Team)
                 .Include(player => player.Country)
-                .Select(player => _mapper.Map<Player, PlayerDto>(player))
-                .ToListAsync();
-            return Ok(players);
+                .Select(player => _mapper.Map<Player, PlayerDto>(player));
+
+            var pagedPlayers = PagedList<PlayerDto>.ToPagedList(allPlayers, playerParameters.PageNumber, playerParameters.PageSize);
+
+            var metadata = new
+            {
+                pagedPlayers.TotalCount,
+                pagedPlayers.PageSize,
+                pagedPlayers.CurrentPage,
+                pagedPlayers.TotalPages,
+                pagedPlayers.HasNext,
+                pagedPlayers.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            return Ok(pagedPlayers);
         }
 
         /// <summary>
