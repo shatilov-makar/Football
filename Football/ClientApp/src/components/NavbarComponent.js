@@ -5,13 +5,13 @@ export default function NavbarComponent() {
   return (
     <Navbar bg="dark" variant={'dark'} expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to={'/players'}>
+        <Navbar.Brand as={Link} to={'/'}>
           Каталог футболистов 3.0
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to={'/players'}>
+            <Nav.Link as={Link} to={'/'}>
               Список игроков
             </Nav.Link>
             <Nav.Link as={Link} to={'/create-player'}>

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import NavbarComponent from './components/NavbarComponent';
 import Players from './components/Players';
 import PlayerForm from './components/PlayerForm';
+import NotFound from './components/NotFound';
 
 export default function App() {
   return (
@@ -13,7 +14,7 @@ export default function App() {
           <Route exec path="/" element={<Players />}></Route>
           <Route exec path="/create-player" element={<PlayerForm />}></Route>
           <Route path="/player/:player_id" element={<PlayerForm />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound></NotFound>} />
         </Routes>
       </Router>
     </div>

@@ -12,8 +12,6 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Football.Hubs;
-using System;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Football
 {
